@@ -1,8 +1,8 @@
 Clash
-Windows_x64_url=https://gh.llkk.cc/https://github.com/mylhdmj/kxsw/releases/download/v2.4.6/Clash.Verge_2.4.6_x64-setup.exe
-Windows_web_url=https://gh.llkk.cc/https://github.com/mylhdmj/kxsw/releases/download/v2.4.6/Clash.Verge_2.4.6_x64_fixed_webview2-setup.exe
-Mac_intel_url=https://gh.llkk.cc/https://github.com/mylhdmj/kxsw/releases/download/v2.4.6/Clash.Verge_2.4.6_x64.dmg
-Mac_apple_url=https://gh.llkk.cc/https://github.com/mylhdmj/kxsw/releases/download/v2.4.6/Clash.Verge_2.4.6_aarch64.dmg
+Windows_x64_url=https://gh.llkk.cc/https://github.com/mylhdmj/kxsw/releases/download/v2.4.7/Clash.Verge_2.4.7_x64-setup.exe
+Windows_web_url=https://gh.llkk.cc/https://github.com/mylhdmj/kxsw/releases/download/v2.4.7/Clash.Verge_2.4.7_x64_fixed_webview2-setup.exe
+Mac_intel_url=https://gh.llkk.cc/https://github.com/mylhdmj/kxsw/releases/download/v2.4.7/Clash.Verge_2.4.7_x64.dmg
+Mac_apple_url=https://gh.llkk.cc/https://github.com/mylhdmj/kxsw/releases/download/v2.4.7/Clash.Verge_2.4.7_aarch64.dmg
 Android_arm_url=https://gh.llkk.cc/https://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.24/cmfa-2.11.24-meta-universal-release.apk
 Android_v8a_url=https://gh.llkk.cc/https://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.24/cmfa-2.11.24-meta-arm64-v8a-release.apk
 Android_v7a_url=https://gh.llkk.cc/https://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.24/cmfa-2.11.24-meta-armeabi-v7a-release.apk
