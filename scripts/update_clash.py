@@ -20,7 +20,7 @@ ANDROID_REPO = "MetaCubeX/ClashMetaForAndroid"
 
 CONFIG_PATH = "link/clash.txt"
 
-# 下载加速前缀：保留原有格式
+# 保留原有下载加速前缀
 CDN_PREFIX = (
     "https\\://pd.zwc365.com/cfworker/https\\://"
 )
@@ -44,6 +44,7 @@ class GitHubAPIError(Exception):
         self.status = status
         self.url = url
         self.detail = detail
+
         super().__init__(
             f"HTTP {status}: {url}\n{detail[:1500]}"
         )
@@ -69,14 +70,21 @@ def request(url, method="GET", data=None, headers=None):
 
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", "replace")
+
         raise GitHubAPIError(
-            exc.code, url, detail
+            exc.code,
+            url,
+            detail,
         ) from exc
 
 
 def api_json(url, method="GET", data=None):
     _, raw = request(url, method, data)
-    return json.loads(raw.decode("utf-8")) if raw else {}
+
+    if not raw:
+        return {}
+
+    return json.loads(raw.decode("utf-8"))
 
 
 def latest_release(repo):
@@ -94,7 +102,11 @@ def latest_release(repo):
             f"{repo} 没有返回有效版本标签"
         )
 
-    print(f"上游最新版本：{repo} -> {release['tag_name']}")
+    print(
+        f"上游最新版本：{repo} -> "
+        f"{release['tag_name']}"
+    )
+
     return release
 
 
@@ -107,11 +119,9 @@ def build_release_notes(release):
     """
     只保留上游 Release 正文中“下载地址”之前的内容。
 
-    从“下载地址”标题开始，后面的全部删除，包括：
-    Windows/macOS/Linux 下载列表、FAQ、推荐链接、
-    创建时间及其他后续内容。
-
-    支持常见 Markdown 标题、加粗标题和普通独立标题。
+    从“下载地址”标题开始，后续全部删除，
+    包括 Windows/macOS/Linux 下载列表、FAQ、
+    推荐链接、创建时间及其他后续内容。
     """
 
     body = (release.get("body") or "").strip()
@@ -134,6 +144,7 @@ def build_release_notes(release):
 
     for pattern in stop_patterns:
         match = re.search(pattern, body)
+
         if match:
             stop_positions.append(match.start())
 
@@ -171,6 +182,7 @@ def find_asset(release, pattern):
 
 def download_asset(asset):
     url = asset["browser_download_url"]
+
     print(f"开始下载：{asset['name']}")
 
     req = urllib.request.Request(
@@ -208,6 +220,7 @@ def download_asset(asset):
         f"下载成功：{asset['name']}，"
         f"{len(content)} 字节"
     )
+
     return content
 
 
@@ -217,6 +230,7 @@ def download_asset(asset):
 
 def get_target_release(tag):
     encoded_tag = urllib.parse.quote(tag, safe="")
+
     url = (
         f"{API}/repos/{TARGET_REPO}/releases/tags/"
         f"{encoded_tag}"
@@ -228,6 +242,7 @@ def get_target_release(tag):
     except GitHubAPIError as exc:
         if exc.status == 404:
             return None
+
         raise
 
 
@@ -236,6 +251,7 @@ def get_release_assets(release):
         f"{API}/repos/{TARGET_REPO}/releases/"
         f"{release['id']}"
     )
+
     return detail.get("assets", [])
 
 
@@ -275,12 +291,15 @@ def upload_asset(release, filename, content):
 
     try:
         with urllib.request.urlopen(req, timeout=300) as resp:
-            result = json.loads(resp.read().decode("utf-8"))
+            result = json.loads(
+                resp.read().decode("utf-8")
+            )
 
         print(f"上传成功：{result['name']}")
 
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", "replace")
+
         raise RuntimeError(
             f"上传失败：{filename}，HTTP {exc.code}\n"
             f"{detail[:1500]}"
@@ -289,35 +308,57 @@ def upload_asset(release, filename, content):
 
 def publish_release(tag, title, body, selected_assets):
     """
-    规则：
-    1. Release 不存在：创建 Release 并上传指定附件。
-    2. Release 已存在且附件齐全：跳过下载与上传。
-    3. Release 已存在但附件缺失：只补传缺失附件。
-    4. 不上传任何未指定的上游安装包。
+    发布规则：
+
+    1. Release 不存在：
+       创建 Release，上传指定的 4 个安装包。
+
+    2. Release 已存在且 4 个附件齐全：
+       跳过下载和上传。
+
+    3. Release 已存在但附件缺失：
+       只补传缺失附件。
+
+    4. 不上传其他架构或其他类型的安装包。
     """
 
     release = get_target_release(tag)
 
     if release is None:
-        release = create_release(tag, title, body)
+        release = create_release(
+            tag,
+            title,
+            body,
+        )
+
         existing_names = set()
+
         print("目标 Release 不存在，执行首次发布。")
 
     else:
         existing_assets = get_release_assets(release)
+
         existing_names = {
-            asset["name"] for asset in existing_assets
+            asset["name"]
+            for asset in existing_assets
         }
 
-        expected_names = set(selected_assets.keys())
-        missing_names = expected_names - existing_names
+        expected_names = set(
+            selected_assets.keys()
+        )
+
+        missing_names = (
+            expected_names - existing_names
+        )
 
         if not missing_names:
             print(
                 f"版本 {tag} 已发布，"
                 "4 个安装包均已存在。"
             )
+
             print("跳过下载和上传。")
+
             return release
 
         print(
@@ -328,18 +369,26 @@ def publish_release(tag, title, body, selected_assets):
         for name in sorted(missing_names):
             print(f"缺失附件：{name}")
 
+    # 只下载和上传缺失的附件。
     for filename, upstream_asset in selected_assets.items():
         if filename in existing_names:
             print(f"附件已存在，跳过：{filename}")
             continue
 
         content = download_asset(upstream_asset)
-        upload_asset(release, filename, content)
 
-    # 再次确认目标 Release 附件齐全
+        upload_asset(
+            release,
+            filename,
+            content,
+        )
+
+    # 检查所有指定附件是否齐全。
     final_assets = get_release_assets(release)
+
     final_names = {
-        asset["name"] for asset in final_assets
+        asset["name"]
+        for asset in final_assets
     }
 
     missing_after_upload = (
@@ -353,6 +402,7 @@ def publish_release(tag, title, body, selected_assets):
         )
 
     print(f"Release 附件检查通过：{tag}")
+
     return release
 
 
@@ -368,13 +418,15 @@ def target_asset_url(tag, filename):
 
 def accelerated_url(url):
     if not url.startswith("https://"):
-        raise ValueError(f"不是有效的 HTTPS 地址：{url}")
+        raise ValueError(
+            f"不是有效的 HTTPS 地址：{url}"
+        )
 
     return CDN_PREFIX + url[len("https://"):]
 
 
 # ============================================================
-# link/clash.txt 更新
+# link/clash.txt 读取和更新
 # ============================================================
 
 def read_config():
@@ -401,6 +453,7 @@ def read_config():
 
 def update_config(replacements):
     content, sha = read_config()
+
     updated = content
 
     for key, url in replacements.items():
@@ -465,11 +518,16 @@ def main():
     verge = latest_release(VERGE_REPO)
     version = verge["tag_name"]
 
-    # 使用独立标签，避免与其他软件 Release 冲突。
-    target_tag = f"clash-verge-{version}"
+    # 直接使用上游标签，例如 v2.5.8。
+    # 不再使用 clash-verge-v2.5.8 这样的标签。
+    target_tag = version
 
-    # 只处理指定的 4 个文件。
-    # 不下载 Windows ARM64、Linux DEB/RPM 等文件。
+    # Release 标题示例：Clash.Verge_2.5.8
+    version_number = version.removeprefix("v")
+    target_title = f"Clash.Verge_{version_number}"
+
+    # 只抓取以下 4 个指定安装包。
+    # 不抓取 Windows ARM64、Linux DEB/RPM 等文件。
     verge_specs = {
         "Windows_x64_url": (
             r"Clash\.Verge_.*_x64-setup\.exe"
@@ -488,16 +546,21 @@ def main():
     selected_assets = {}
 
     for key, pattern in verge_specs.items():
-        asset = find_asset(verge, pattern)
+        asset = find_asset(
+            verge,
+            pattern,
+        )
+
         selected_assets[asset["name"]] = asset
+
         print(f"{key}: {asset['name']}")
 
-    # 只保留“下载地址”之前的上游更新说明。
+    # 只保留“下载地址”之前的更新说明。
     release_notes = build_release_notes(verge)
 
     publish_release(
         tag=target_tag,
-        title=f"Clash Verge Rev {version}",
+        title=target_title,
         body=release_notes,
         selected_assets=selected_assets,
     )
@@ -508,9 +571,13 @@ def main():
         f"{urllib.parse.quote(target_tag, safe='')}"
     )
 
-    # 更新目标仓库 4 个安装包的下载地址。
+    # 生成 4 个目标仓库下载地址。
+    # 地址格式：releases/download/v2.5.8/文件名
     for key, pattern in verge_specs.items():
-        asset = find_asset(verge, pattern)
+        asset = find_asset(
+            verge,
+            pattern,
+        )
 
         url = target_asset_url(
             target_tag,
@@ -543,7 +610,10 @@ def main():
     }
 
     for key, pattern in android_specs.items():
-        asset = find_asset(android, pattern)
+        asset = find_asset(
+            android,
+            pattern,
+        )
 
         replacements[key] = accelerated_url(
             asset["browser_download_url"]
