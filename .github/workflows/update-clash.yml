@@ -1,0 +1,36 @@
+name: Update Clash Releases
+
+on:
+  schedule:
+    # 北京时间每天 00:00（UTC 前一天 16:00）
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-clash-releases
+  cancel-in-progress: false
+
+jobs:
+  update-clash:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Update Clash releases and links
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_REPO: ${{ github.repository }}
+        run: python scripts/update_clash.py
