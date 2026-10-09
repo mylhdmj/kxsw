@@ -8,10 +8,10 @@ Android_v8a_url=https://pd.zwc365.com/cfworker/https://github.com/MetaCubeX/Clas
 Android_v7a_url=https://pd.zwc365.com/cfworker/https://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.35/cmfa-2.11.35-meta-armeabi-v7a-release.apk
 
 FlClash
-Windows_x64_url=https\://pd.zwc365.com/cfworker/https\://github.com/mylhdmj/kxsw/releases/download/v2.5.8/Clash.Verge_2.5.8_x64-setup.exe
-Windows_zip_url=https://gh.llkk.cc/https://github.com/chen08209/FlClash/releases/download/v0.8.96/FlClash-0.8.96-windows-amd64.zip
-Mac_intel_url=https\://pd.zwc365.com/cfworker/https\://github.com/mylhdmj/kxsw/releases/download/v2.5.8/Clash.Verge_2.5.8_x64.dmg
-Mac_apple_url=https\://pd.zwc365.com/cfworker/https\://github.com/mylhdmj/kxsw/releases/download/v2.5.8/Clash.Verge_2.5.8_aarch64.dmg
-Android_arm_url=https\://pd.zwc365.com/cfworker/https\://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.35/cmfa-2.11.35-meta-universal-release.apk
-Android_v8a_url=https\://pd.zwc365.com/cfworker/https\://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.35/cmfa-2.11.35-meta-arm64-v8a-release.apk
-Android_v7a_url=https\://pd.zwc365.com/cfworker/https\://github.com/MetaCubeX/ClashMetaForAndroid/releases/download/v2.11.35/cmfa-2.11.35-meta-armeabi-v7a-release.apk
+Windows_x64_url=https://pd.zwc365.com/cfworker/https://github.com/chen08209/FlClash/releases/download/v0.8.96/FlClash-0.8.96-windows-amd64-setup.exe
+Windows_zip_url=https://pd.zwc365.com/cfworker/https://github.com/chen08209/FlClash/releases/download/v0.8.96/FlClash-0.8.96-windows-amd64.zip
+Mac_intel_url=https://pd.zwc365.com/cfworker/https://github.com/chen08209/FlClash/releases/download/v0.8.96/FlClash-0.8.96-macos-amd64.dmg
+Mac_apple_url=https://pd.zwc365.com/cfworker/https://github.com/chen08209/FlClash/releases/download/v0.8.96/FlClash-0.8.96-macos-arm64.dmg
+Android_arm_url=https://pd.zwc365.com/cfworker/https://github.com/chen08209/FlClash/releases/download/v0.8.96/FlClash-0.8.96-android-x86_64.apk
+Android_v8a_url=https://pd.zwc365.com/cfworker/https://github.com/chen08209/FlClash/releases/download/v0.8.96/FlClash-0.8.96-android-arm64-v8a.apk
+Android_v7a_url=https://pd.zwc365.com/cfworker/https://github.com/chen08209/FlClash/releases/download/v0.8.96/FlClash-0.8.96-android-armeabi-v7a.apk
